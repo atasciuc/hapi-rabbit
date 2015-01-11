@@ -1,0 +1,26 @@
+{
+  "name": "hapi-rabbit",
+  "version": "1.0.0",
+  "description": "Base skeleton project for API RESt projects in HapiJS.",
+  "main": "server.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:cuemby/hapi-rabbit.git"
+  },
+  "keywords": [
+    "hapijs",
+    "api",
+    "base",
+    "restful",
+    "http"
+  ],
+  "author": "Angel Ramirez <angel@cuemby.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/cuemby/hapi-rabbit/issues"
+  },
+  "homepage": "https://github.com/cuemby/hapi-rabbit"
+}
