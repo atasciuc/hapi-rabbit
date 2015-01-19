@@ -4,7 +4,9 @@
   "description": "Base skeleton project for API RESt projects in HapiJS.",
   "main": "server.js",
   "scripts": {
-    "test": "mocha"
+    "test": "node_modules/mocha/bin/mocha --colors --recursive --reporter nyan",
+    "start": "node server.js | node_modules/.bin/bunyan -o short",
+    "run_dev": "node_modules/.bin/nodemon server.js | node_modules/.bin/bunyan -o short"
   },
   "repository": {
     "type": "git",
@@ -22,5 +24,17 @@
   "bugs": {
     "url": "https://github.com/cuemby/hapi-rabbit/issues"
   },
-  "homepage": "https://github.com/cuemby/hapi-rabbit"
+  "homepage": "https://github.com/cuemby/hapi-rabbit",
+  "dependencies": {
+    "async": "^0.9.0",
+    "bunyan": "^1.2.4",
+    "habitat": "^3.1.2",
+    "hapi": "^8.1.0",
+    "socket.io": "^1.2.1"
+  },
+  "devDependencies": {
+    "chai": "^1.10.0",
+    "mocha": "^2.1.0",
+    "nodemon": "^1.2.1"
+  }
 }

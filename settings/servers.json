@@ -1,0 +1,31 @@
+{
+  "optOptions": {
+    "app": {},
+    "cache": {},
+    "connections": {},
+    "debug": {},
+    "files": {},
+    "load": {},
+    "mime": {},
+    "minimal": {},
+    "plugins": {}
+  },
+  "optConnections": [
+    {
+      "connection": {
+        "labels": "primary",
+        "host": "127.0.0.1",
+        "port": 1337
+      },
+      "listener": true
+    },
+    {
+      "connection": {
+        "labels": "secondary",
+        "host": "127.0.0.1",
+        "port": 1338
+      },
+      "listerner": true
+    }
+  ]
+}
