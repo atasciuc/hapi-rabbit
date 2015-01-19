@@ -10,36 +10,14 @@
 
     var app = new hapi.Server(manifest.server.options);
 
-    var start = function (fn) {
-        logger.info('initial configuration:', manifest);
-
-        async.auto({
-            connections: runConnections,
-            methods: loadMethods,
-            server: ['connections', runServers],
-            sockets: ['server', runSockets]
-        }, function (error, stack) {
-            if (error) {
-                logger.error('ApplicationCore#start', error);
-                return fn(error);
-            }
-
-            stack.logger = logger;
-            stack.manifest = manifest;
-
-            return fn(null, stack);
-        });
-    };
-
-// this runs the connections predifined
     var runConnections = function (callback) {
-        async.mapSeries(manifest.server.connections, function (server, fn) {
-            app.connection(server.configuration);
-            return fn(null, app.select(server.configuration.labels));
+        async.mapSeries(manifest.server.connections, function (connection, fn) {
+            app.connection(connection.configuration);
+            return fn(null, app.select(connection.configuration.labels));
         }, callback);
     };
 
-    var runServers = function (callback) {
+    var runServer = function (callback) {
         app.start(function (error) {
             if (error) {
                 return callback(error);
@@ -63,7 +41,9 @@
         var files = filesLoader(manifest.server.methods.path);
         if (files) {
             async.mapSeries(files, function (file, fn) {
-                app.method(file.fileName, require(file.filePath));
+                var func = require(file.filePath);
+                app.method(file.fileName, func);
+                return fn(null, func);
             }, callback);
         }
     };
@@ -79,6 +59,21 @@
     };
 
     module.exports.start = function (callback) {
-        return start(callback);
+        async.auto({
+            connections: runConnections,
+            //methods: ['connections', loadMethods],
+            //sockets: ['server', runSockets]
+            server: ['connections', runServer]
+        }, function (error, stack) {
+            if (error) {
+                logger.error('ApplicationCore#start', error);
+                return callback(error);
+            }
+
+            stack.logger = logger;
+            stack.manifest = manifest;
+
+            return callback(null, stack);
+        });
     };
 })();

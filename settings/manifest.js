@@ -4,7 +4,6 @@
     var path        = require('path'),
         basePath    = path.join(__dirname, '..');
 
-    var users = app.datasources('mysql').use('users')
     module.exports = {
         globals: {
             appName: 'HappyRabbit',
@@ -18,21 +17,24 @@
                 auto: true,
                 files: [
                     'src/data/my_function'
-                ] // here your can specify other methods that are not in the default path
+                ]
             }
         },
-        dataSources: {
+        sources: {
             databases: {
-                relational: {
-                    host: '',
-                    driver: '',
-                    port: ''
+                primary: {
+                    host: '127.0.0.1',
+                    port: 3306,
+                    driver: 'mysql'
                 },
                 secondary: {
-
+                    host: '127.0.0.1',
+                    port: 27017,
+                    driver: 'mongodb'
                 }
             },
-            queues: []
+            queues: {},
+            mailers: {}
         }
     };
 })();
