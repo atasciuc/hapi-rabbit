@@ -1,13 +1,14 @@
 (function () {
     'use strict';
 
-    var path        = require('path'),
-        basePath    = path.join(__dirname, '..'),
-        nodeEnv     = process.env.NODE_ENV || 'development';
+    var path = require('path'),
+        basePath = path.join(__dirname, '../..'),
+        nodeEnv = process.env.NODE_ENV || 'development';
 
-    var envFile     = require('habitat').load(path.join(__dirname, '..', nodeEnv + '.env'))
+    var env = require('habitat').load(path.join(__dirname, '../..', nodeEnv + '.env'));
 
     module.exports = {
+        env: env.get('HR'),
         globals: {
             appName: 'HappyRabbit',
             appRootPath: basePath
@@ -42,21 +43,16 @@
                 ]
             }
         },
-        sources: {
-            databases: {
-                primary: {
-                    host: '127.0.0.1',
-                    port: 3306,
-                    driver: 'mysql'
-                },
-                secondary: {
-                    host: '127.0.0.1',
-                    port: 27017,
-                    driver: 'mongodb'
-                }
-            },
-            queues: {},
-            mailers: {}
+        services: {
+            databases: [
+                path.join(basePath, 'src/services/databases')
+            ],
+            queues: [
+                path.join(basePath, 'src/services/queues')
+            ],
+            mailers: [
+                path.join(basePath, 'src/services/mailers')
+            ]
         }
     };
 })();

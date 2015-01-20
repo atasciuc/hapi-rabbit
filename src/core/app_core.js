@@ -7,7 +7,7 @@
         socketIO = require('socket.io'),
         logger = require('./logger'),
         async = require('async'),
-        manifest = require(path.join(__dirname, '../../settings', 'manifest'));
+        manifest = require(path.join(__dirname, '../settings'));
 
     var app = new hapi.Server(manifest.server.options);
 
@@ -89,6 +89,25 @@
         }
     };
 
+    var registerServices = function (callback) {
+        async.mapSeries(Object.keys(manifest.services), function (key, cb) {
+            var serviceFiles = filesLoader(manifest.services[key]);
+
+            async.mapSeries(serviceFiles, function (serviceFile, fn) {
+                var service = require(serviceFile);
+                if (service.hasOwnProperty('register')) {
+                    app.register({
+                        register: require(service.register),
+                        options: service.options
+                    }, fn);
+                }
+                else {
+                    return fn(null, false);
+                }
+            }, cb);
+        }, callback);
+    };
+
     var filesLoader = function (directories) {
         var files = [];
 
@@ -106,13 +125,13 @@
             connections: runConnections,
             methods: ['connections', registerMethods],
             plugins: ['methods', registerPlugins],
-            routes: ['methods', registerRoutes],
-            sockets: ['routes', runSockets],
-            hapiServer: ['sockets', runServer]
+            routes: ['plugins', registerRoutes],
+            services: ['routes', registerServices],
+            sockets: runSockets,
+            hapiServer: runServer
         }, function (error, stack) {
             if (error) {
                 logger.error('ApplicationCore#start', error);
-                return callback(error);
             }
 
             stack.logger = logger;
