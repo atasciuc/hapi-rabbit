@@ -1,9 +1,8 @@
 (function () {
-    var core = require('./src/core/app_core');
+    var run = require('./src/core/app_core');
 
-    core.start(function (error, app) {
-        app.server.connections.forEach(function (conn) {
-            app.logger.info('server running at:', conn.info.uri);
-        });
+    run(function (error, application) {
+        application.hapiServer.methods.displayConnectionsInfo(application);
+        application.hapiServer.methods.sayHello(application.manifest.globals.appName);
     });
 })();

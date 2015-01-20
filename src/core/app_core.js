@@ -3,6 +3,7 @@
 
     var path = require('path'),
         hapi = require('hapi'),
+        hoek = require('hoek'),
         socketIO = require('socket.io'),
         logger = require('./logger'),
         async = require('async'),
@@ -37,33 +38,77 @@
         }, callback);
     };
 
-    var loadMethods = function (callback) {
-        var files = filesLoader(manifest.server.methods.path);
-        if (files) {
-            async.mapSeries(files, function (file, fn) {
-                var func = require(file.filePath);
-                app.method(file.fileName, func);
+    var registerMethods = function (callback) {
+        var methods = filesLoader(manifest.server.methods.dirs);
+
+        if (methods) {
+            async.mapSeries(methods, function (file, fn) {
+                var func = require(file);
+                Object.keys(func).forEach(function (name) {
+                    app.method(name, func[name]);
+                });
                 return fn(null, func);
             }, callback);
         }
+        else {
+            return callback(null, false);
+        }
     };
 
-    var filesLoader = function (path) {
+    var registerPlugins = function (callback) {
+        var plugins = filesLoader(manifest.server.plugins.dirs);
+
+        if (plugins) {
+            async.mapSeries(plugins, function (file, fn) {
+                var plugin = require(file);
+                app.register({
+                    register: require(plugin.register),
+                    options: plugin.options
+                }, fn);
+            }, callback);
+        }
+        else {
+            return callback(null, false);
+        }
+    };
+
+    var registerRoutes = function (callback) {
+        var files = filesLoader(manifest.server.routes.dirs);
+
+        if (files) {
+            async.mapSeries(files, function (file, fn) {
+                var routes = require(file);
+                Object.keys(routes).forEach(function (route) {
+                    app.route(routes[route]);
+                });
+                return fn(null, routes);
+            }, callback);
+        }
+        else {
+            return callback(null, false);
+        }
+    };
+
+    var filesLoader = function (directories) {
         var files = [];
-        require('fs').readdirSync(path).forEach(function (file) {
-            files.push({
-                filePath: file,
-                fileName: file.split("/").pop().replace(/.*/, "")
+
+        directories.forEach(function (directory) {
+            require('fs').readdirSync(directory).forEach(function (file) {
+                files.push(path.join(directory, file));
             });
         });
+
+        return files;
     };
 
-    module.exports.start = function (callback) {
+    module.exports = function (callback) {
         async.auto({
             connections: runConnections,
-            //methods: ['connections', loadMethods],
-            //sockets: ['server', runSockets]
-            server: ['connections', runServer]
+            methods: ['connections', registerMethods],
+            plugins: ['methods', registerPlugins],
+            routes: ['methods', registerRoutes],
+            sockets: ['routes', runSockets],
+            hapiServer: ['sockets', runServer]
         }, function (error, stack) {
             if (error) {
                 logger.error('ApplicationCore#start', error);

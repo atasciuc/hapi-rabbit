@@ -2,7 +2,10 @@
     'use strict';
 
     var path        = require('path'),
-        basePath    = path.join(__dirname, '..');
+        basePath    = path.join(__dirname, '..'),
+        nodeEnv     = process.env.NODE_ENV || 'development';
+
+    var envFile     = require('habitat').load(path.join(__dirname, '..', nodeEnv + '.env'))
 
     module.exports = {
         globals: {
@@ -10,13 +13,32 @@
             appRootPath: basePath
         },
         server: {
-            options: {},
+            options: {
+                app: {},
+                cache: require('catbox-memory'),
+                connections: {},
+                debug: {},
+                files: {},
+                load: {},
+                mime: {},
+                minimal: true,
+                plugins: {}
+            },
             connections: require('./connections'),
             methods: {
-                path: path.join(basePath, 'src/methods'),
-                auto: true,
-                files: [
-                    'src/data/my_function'
+                dirs: [
+                    path.join(basePath, 'src/methods')
+                    //path.join(basePath, 'src/methods')
+                ]
+            },
+            plugins: {
+                dirs: [
+                    path.join(basePath, 'src/plugins')
+                ]
+            },
+            routes: {
+                dirs: [
+                    path.join(basePath, 'src/routes')
                 ]
             }
         },

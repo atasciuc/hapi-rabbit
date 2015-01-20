@@ -12,7 +12,7 @@
             {
                 level: 'error',
                 stream: process.stdout,
-                path: __dirname + '/log/error.log'
+                path: __dirname + '/log/bunyan.log'
             }
         ]
     });
