@@ -6,7 +6,7 @@
             application.logger.info('Hey dude setup at least one connection.');
         }
 
-        application.hapiServer.connections.forEach(function (conn) {
+        application.server.connections.forEach(function (conn) {
             application.logger.info('server running at:', conn.info.uri);
         });
     };

@@ -25,23 +25,51 @@
                 minimal: true,
                 plugins: {}
             },
-            connections: require('./connections'),
-            methods: {
-                dirs: [
-                    path.join(basePath, 'src/methods')
-                    //path.join(basePath, 'src/methods')
-                ]
-            },
-            plugins: {
-                dirs: [
-                    path.join(basePath, 'src/plugins')
-                ]
-            },
-            routes: {
-                dirs: [
-                    path.join(basePath, 'src/routes')
-                ]
-            }
+            connections: [
+                {
+                    configuration: {
+                        labels: 'api',
+                        host: env.api_host || '0.0.0.0',
+                        port: env.api_port || 1337
+                    },
+                    listener: true,
+                    routes: [
+                        path.join(basePath, 'src/routes/api')
+                    ]
+                },
+                {
+                    configuration: {
+                        labels: 'dashboard',
+                        host: env.dashboard_host || '0.0.0.0',
+                        port: env.dashboard_port || 1338
+                    },
+                    listener: true,
+                    routes: [
+                        path.join(basePath, 'src/routes/dashboard')
+                    ]
+                },
+                {
+                    configuration: {
+                        labels: 'web',
+                        host: env.web_host || '0.0.0.0',
+                        port: env.web_port || 1339
+                    },
+                    listener: false,
+                    routes: [
+                        path.join(basePath, 'src/routes/web')
+                    ]
+                }
+            ],
+            methods: [
+                path.join(basePath, 'src/methods')
+            ],
+            plugins: [
+                path.join(basePath, 'src/plugins')
+            ],
+            routes: [
+                path.join(basePath, 'src/routes'),
+                path.join(basePath, 'src/routes/common')
+            ]
         },
         services: {
             databases: [
