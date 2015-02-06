@@ -1,17 +1,17 @@
 (function () {
     'use strict';
 
-    exports.displayConnectionsInfo = function (application) {
-        if (!application) {
-            application.logger.info('Hey dude setup at least one connection.');
+    exports.displayConnectionsInfo = function (app) {
+        if (!app) {
+            app.logger.info('Hey dude setup at least one connection.');
         }
 
-        application.server.connections.forEach(function (conn) {
-            application.logger.info('server running at:', conn.info.uri);
+        app.server.connections.forEach(function (conn) {
+            app.logger.info('server running at:', conn.info.uri, conn.settings.labels);
         });
     };
 
-    exports.sayHello = function (name) {
-        console.log('Hello', name);
+    exports.displayCreditsInfo = function (app) {
+        app.logger.info(app.manifest.globals.appCredits);
     };
 })();

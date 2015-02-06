@@ -1,9 +1,11 @@
 (function () {
     'use strict';
 
-    var logger = require('bunyan');
+    var env     = require('../settings');
+    var logger  = require('bunyan');
+
     module.exports = logger.createLogger({
-        name: 'HappyRabbit',
+        name: env.globals.appName || 'AppName',
         streams: [
             {
                 level: 'info',

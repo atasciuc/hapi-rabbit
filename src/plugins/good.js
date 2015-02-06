@@ -2,7 +2,7 @@
     'use strict';
 
     module.exports = {
-        register: 'good',
+        register: require('good'),
         dependencies: ['good-file', 'good-http'],
         options: {
             opsInterval: 1000,

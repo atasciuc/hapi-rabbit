@@ -1,8 +1,18 @@
 (function () {
-    var run = require('./src/core/app_core');
+    var Core    = require('./src/core/app_core'),
+        app     = Core.App;
 
-    run(function (error, app) {
-        app.server.methods.displayConnectionsInfo(app);
-        app.server.methods.sayHello(app.manifest.globals.appName);
-    });
+    if (!module.parent) {
+        console.log('running server.');
+        Core.run(function (error) {
+            if (error) {
+                throw new Error(error);
+            }
+        });
+    }
+
+    app.server.methods.displayConnectionsInfo(app);
+    app.server.methods.displayCreditsInfo(app);
+
+    module.exports = app;
 })();

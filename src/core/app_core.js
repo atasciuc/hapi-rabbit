@@ -3,14 +3,13 @@
 
     var path = require('path'),
         hapi = require('hapi'),
-        hoek = require('hoek'),
         fs = require('fs'),
         socketIO = require('socket.io'),
         logger = require('./logger'),
         async = require('async'),
         manifest = require(path.join(__dirname, '../settings')),
         sockets = {},
-        server;
+        server = new hapi.Server(manifest.server.options);
 
     var runServer = function (callback) {
         server.start(function (error) {
@@ -91,32 +90,28 @@
     var registerPlugin = function (file, callback) {
         var plugin = require(file.path);
         try {
-            server.register({
-                register: require(plugin.register),
-                options: plugin.options
-            }, callback);
+            server.register(plugin, callback);
         } catch (e) {
             return callback(e);
         }
     };
 
-    module.exports = function (callback) {
-        async.auto({
-            server: function (callback) {
-                server = new hapi.Server(manifest.server.options);
-                if (!server) {
-                    throw new Error('Unable to create the server.');
-                }
+    var App = exports.App = {
+        server: server,
+        sockets: sockets,
+        logger: logger,
+        manifest: manifest
+    };
 
-                return callback(null, server);
-            },
-            connections: ['server', function (callback) {
+    exports.run = function (callback) {
+        async.auto({
+            connections: function (callback) {
                 if (!manifest.server.connections) {
                     throw new Error('You must add at least one connection.');
                 }
 
                 async.mapSeries(manifest.server.connections, registerConnection, callback);
-            }],
+            },
             methods: ['connections', function (callback) {
                 if (!manifest.server.methods) {
                     return callback(null, false);
@@ -124,41 +119,34 @@
 
                 async.mapSeries(loadFiles(manifest.server.methods), registerMethod, callback);
             }],
-            plugins: ['connections', function (callback) {
+            plugins: ['methods', function (callback) {
                 if (!manifest.server.plugins) {
                     return callback(null, false);
                 }
 
                 async.mapSeries(loadFiles(manifest.server.plugins), registerPlugin, callback);
             }],
-            services: ['connections', function (callback) {
-                if (!manifest.services) {
-                    return callback(null, false);
-                }
-
-                async.mapSeries(Object.keys(manifest.services), function (service, fn) {
-                    return async.mapSeries(loadFiles(manifest.services[service]), registerPlugin, fn);
-                }, callback)
-            }],
-            routes: ['plugins', 'services', function (callback) {
+            routes: ['plugins', function (callback) {
                 if (!manifest.server.routes) {
                     return callback(null, false);
                 }
 
                 return async.mapSeries(loadFiles(manifest.server.routes), registerRoute, callback);
             }],
-            hapiServer: ['routes', runServer]
-        }, function (error, stack) {
+            server: runServer
+        }, function (error) {
             if (error) {
-                logger.error('ApplicationCore#start', error);
+                logger.error('ApplicationCore', error);
             }
 
-            return callback(null, {
-                server: stack.hapiServer,
+            App = {
+                server: server,
                 sockets: sockets,
                 logger: logger,
                 manifest: manifest
-            });
+            };
+
+            return callback(null, App);
         });
     };
 })();

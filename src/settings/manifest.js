@@ -11,6 +11,7 @@
         env: env.get('HR'),
         globals: {
             appName: 'HappyRabbit',
+            appCredits: 'by Cuemby',
             appRootPath: basePath
         },
         server: {
@@ -69,17 +70,6 @@
             routes: [
                 path.join(basePath, 'src/routes'),
                 path.join(basePath, 'src/routes/common')
-            ]
-        },
-        services: {
-            databases: [
-                path.join(basePath, 'src/services/databases')
-            ],
-            queues: [
-                path.join(basePath, 'src/services/queues')
-            ],
-            mailers: [
-                path.join(basePath, 'src/services/mailers')
             ]
         }
     };
