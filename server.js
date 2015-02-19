@@ -1,10 +1,12 @@
 (function () {
+    'use strict';
+
     var Core    = require('./src/core/app_core'),
         app     = Core.App;
 
     if (!module.parent) {
         console.log('running server.');
-        Core.run(function (error) {
+        Core.run(function (error, App) {
             if (error) {
                 throw new Error(error);
             }
@@ -15,4 +17,5 @@
     app.server.methods.displayCreditsInfo(app);
 
     module.exports = app;
+
 })();

@@ -61,12 +61,21 @@
                     ]
                 }
             ],
+            /**
+             * Application methods
+             */
             methods: [
                 path.join(basePath, 'src/methods')
             ],
+            /**
+             * Application plugins
+             */
             plugins: [
                 path.join(basePath, 'src/plugins')
             ],
+            /**
+             * Application routes. Note: Available to all of the connections (servers)
+             */
             routes: [
                 path.join(basePath, 'src/routes'),
                 path.join(basePath, 'src/routes/common')

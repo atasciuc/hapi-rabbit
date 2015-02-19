@@ -6,7 +6,8 @@
   "scripts": {
     "test": "node_modules/mocha/bin/mocha --colors --recursive --reporter nyan",
     "start": "node server.js | node_modules/.bin/bunyan -o short",
-    "dev": "node_modules/.bin/nodemon server.js | node_modules/.bin/bunyan -o short"
+    "dev": "node_modules/.bin/nodemon server.js | node_modules/.bin/bunyan -o short",
+    "debug": "node_modules/.bin/node-debug server.js | node_modules/.bin/bunyan -o short"
   },
   "repository": {
     "type": "git",
@@ -42,6 +43,7 @@
   "devDependencies": {
     "chai": "^1.10.0",
     "mocha": "^2.1.0",
+    "node-inspector": "^0.8.3",
     "nodemon": "^1.2.1"
   }
 }
